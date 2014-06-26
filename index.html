@@ -1,0 +1,76 @@
+<html lang=en>
+  <head>
+    <meta charset='utf-8'>
+    <title>Are cookies enabled?</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <style>
+      body { margin: 0; padding: 0; font-family: 'Open Sans', sans-serif; }
+      #main {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-top: -150px;
+        margin-left: -300px;
+        width: 600px;
+        height: 300px;
+        color: white;
+        text-align: center;
+        font-size: 5em;
+      }
+      .yes { background-color: rgba(0,255,0,0.5); }
+      .no { background-color: rgba(255,0,0,0.5); }
+      #browsers { margin-top: 40px; }
+      .browser { text-decoration: none; }
+      .browser img { border: 0; }
+    </style>
+  </head>
+  <body onload='areCookiesEnabled()'>
+    <div id=main>
+      <div id=text></div>
+      <div id=browsers>
+        <a class=browser href='https://support.google.com/accounts/answer/61416?hl=en' title='cookies in chrome' target='_blank'>
+          <img src='https://raw.githubusercontent.com/alrra/browser-logos/master/chrome/chrome_128x128.png' alt='cookies in chrome'>
+        </a>
+        <a class=browser href='https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences' title='cookies in firefox' target='_blank'>
+          <img src='https://raw.githubusercontent.com/alrra/browser-logos/master/firefox/firefox_128x128.png' alt='cookies in firefox'>
+        </a>
+        <a class=browser href='http://windows.microsoft.com/en-IE/windows-vista/block-or-allow-cookies' title='cookies in internet explorer' target='_blank'>
+          <img src='https://raw.githubusercontent.com/alrra/browser-logos/master/internet-explorer/internet-explorer_128x128.png' alt='cookies in internet explorer'>
+        </a>
+      </div>
+    </div>
+    <script>
+      !function() {
+        'use strict';
+
+        window.areCookiesEnabled = function() {
+          // https://github.com/Modernizr/Modernizr/blob/master/feature-detects/cookies.js
+          // navigator.cookieEnabled cannot detect custom or nuanced cookie blocking
+          // configurations. For example, when blocking cookies via the Advanced
+          // Privacy Settings in IE9, it always returns true. And there have been
+          // issues in the past with site-specific exceptions.
+          // Don't rely on it.
+
+          // try..catch because some in situations `document.cookie` is exposed but throws a
+          // SecurityError if you try to access it; e.g. documents created from data URIs
+          // or in sandboxed iframes (depending on flags/context)
+          var text = document.getElementById('text'), areCookiesEnabled;
+
+          try {
+            // Create cookie
+            document.cookie = 'cookietest=1';
+            areCookiesEnabled = document.cookie.indexOf('cookietest=') != -1;
+            // Delete cookie
+            document.cookie = 'cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT';
+          }
+          catch (e) {
+            areCookiesEnabled = false;
+          }
+
+          text.textContent = areCookiesEnabled ? 'yes :)' : 'no :(';
+          document.body.className = areCookiesEnabled ? 'yes' : 'no';
+        }
+      }();
+    </script>
+  </body>
+</html>
